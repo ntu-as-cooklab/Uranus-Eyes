@@ -1,1 +1,10 @@
 android/assets/*
+android/.idea/*
+android/gradle/*
+android/.gradle/*
+android/gradleBuild/*
+android/*
+android/gradlew
+android/local.properties
+android/gradle.bat
+*.pyc
