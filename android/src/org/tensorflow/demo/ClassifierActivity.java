@@ -26,11 +26,15 @@ import android.media.Image;
 import android.media.Image.Plane;
 import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.os.Trace;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Vector;
 import org.tensorflow.demo.OverlayView.DrawCallback;
@@ -249,6 +253,7 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
     final Bitmap copy = cropCopyBitmap;
     if (copy != null) {
       final Matrix matrix = new Matrix();
+      // small screen size
       final float scaleFactor = 2;
       matrix.postScale(scaleFactor, scaleFactor);
       matrix.postTranslate(
@@ -272,6 +277,59 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
       lines.add("Inference time: " + lastProcessingTimeMs + "ms");
 
       borderedText.drawLines(canvas, 10, canvas.getHeight() - 10, lines);
+    }
+  }
+
+  private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
+    Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
+    Canvas canvas = new Canvas(bmOverlay);
+    canvas.drawBitmap(bmp1, new Matrix(), null);
+    canvas.drawBitmap(bmp2, 0, 300, null);
+    return bmOverlay;
+  }
+
+  private void capture() {
+    View v = getWindow().getDecorView().findViewById(R.id.container);
+    v.setDrawingCacheEnabled(true);
+    Bitmap bmp = Bitmap.createBitmap(v.getDrawingCache());
+    v.setDrawingCacheEnabled(false);
+    final Bitmap copy = cropCopyBitmap;
+    final Matrix matrix = new Matrix();
+    Bitmap bmOverlay = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
+    Canvas canvas = new Canvas(bmOverlay);
+    // screen size
+    final float scaleFactor = 4;
+    matrix.postScale(scaleFactor, scaleFactor);
+    matrix.postTranslate(
+        canvas.getWidth() - copy.getWidth() * scaleFactor,
+        canvas.getHeight() - copy.getHeight() * scaleFactor);
+    Bitmap bmp2 = Bitmap.createBitmap(copy, 0, 0, copy.getWidth(),  copy.getHeight(), matrix, true);
+
+    // Add 2 layouts
+    bmp = overlay(bmp, bmp2);
+
+    try {
+      final String root =
+        Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "cloud-classifier";
+      final File myDir = new File(root);
+      if (!myDir.mkdirs()) {
+          LOGGER.i("Make dir failed");
+      }
+      FileOutputStream fos = new FileOutputStream(new File(
+        root, "SCREEN" + System.currentTimeMillis() + ".png"));
+      bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+      fos.flush();
+      fos.close();
+    } catch (Exception e) {
+      LOGGER.e(e, "Exception!");
+    }
+  }
+
+  public void onClick(View view) {
+    try {
+      capture();
+    } catch (Exception e) {
+      LOGGER.e(e, "Exception!");
     }
   }
 }
