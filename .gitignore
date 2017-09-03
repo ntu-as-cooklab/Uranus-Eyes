@@ -4,7 +4,9 @@ android/gradle/*
 android/.gradle/*
 android/gradleBuild/*
 android/*
+!android/src
 android/gradlew
 android/local.properties
 android/gradle.bat
 *.pyc
+*.class
