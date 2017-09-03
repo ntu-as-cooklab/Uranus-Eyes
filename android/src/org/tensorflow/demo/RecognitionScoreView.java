@@ -21,6 +21,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import java.text.DecimalFormat;
+
 
 import org.tensorflow.demo.Classifier.Recognition;
 
@@ -58,10 +60,13 @@ public class RecognitionScoreView extends View implements ResultsView {
     int y = (int) (fgPaint.getTextSize() * 1.5f);
 
     canvas.drawPaint(bgPaint);
+    
+    DecimalFormat df = new DecimalFormat("##.00");
 
     if (results != null) {
       for (final Recognition recog : results) {
-        canvas.drawText(recog.getTitle() + ": " + recog.getConfidence(), x, y, fgPaint);
+        double value = Double.parseDouble(df.format(recog.getConfidence()*100));
+        canvas.drawText(recog.getTitle() + ": " + value + " %", x, y, fgPaint);
         y += fgPaint.getTextSize() * 1.5f;
       }
     }
