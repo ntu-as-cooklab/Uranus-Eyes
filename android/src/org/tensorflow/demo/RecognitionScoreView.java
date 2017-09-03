@@ -43,9 +43,10 @@ public class RecognitionScoreView extends View implements ResultsView {
             TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, getResources().getDisplayMetrics());
     fgPaint = new Paint();
     fgPaint.setTextSize(textSizePx);
+    fgPaint.setColor(0xFFFFFFFF);
 
     bgPaint = new Paint();
-    bgPaint.setColor(0xcc4285f4);
+    bgPaint.setColor(0);
   }
 
   @Override
