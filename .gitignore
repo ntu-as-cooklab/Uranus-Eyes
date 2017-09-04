@@ -11,3 +11,4 @@ android/local.properties
 android/gradle.bat
 *.pyc
 *.class
+*.jks
