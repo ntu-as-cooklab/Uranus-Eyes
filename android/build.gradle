@@ -35,6 +35,13 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
+
+    defaultConfig {
+        applicationId "tw.edu.ntu.as.cook.uranuseyes"
+        versionCode 1
+        versionName "0.0.1"
+    }
+
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
